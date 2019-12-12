@@ -2,9 +2,9 @@ const BookmarksService = {
   getAllBookmarks(knex) {
     return knex.select('*').from('bookmarks');
   },
-  insertBookmarks(knex, newArticle) {
+  insertBookmarks(knex, newBookmark) {
     return knex
-      .insert(newArticle)
+      .insert(newBookmark)
       .into('bookmarks')
       .returning('*')
       .then(rows => {
