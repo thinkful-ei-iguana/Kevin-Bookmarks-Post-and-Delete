@@ -1,6 +1,5 @@
 const express = require('express');
 const BookmarksService = require('./bookmarks-service');
-const uuid = require('uuid/v4');
 const { isWebUri } = require('valid-url');
 const logger = require('../logger');
 const xss = require('xss');
@@ -98,5 +97,26 @@ bookmarksRouter
       })
       .catch(next);
   });
+  .patch(bodyParser, (req, res, next) => {
+    const { title, url, description, rating } = req.body
+    const bookmarkToUpdate = { title, url, description, rating }
+
+    const numberOfValues = Object.values(articleToUpdate).filter(Boolean).length
+    if(numberOfValues === 0)
+      return res.status(400).json({
+        error: {
+          message: 'Request body must contain either \'title\', \'url\', \'description\', or \'rating\'
+        }
+      })
+    BookmarksService.updateBookmark(
+      req.app.get('db'),
+      req.params.bookmark_id,
+      bookmarkToUpdate
+    )
+      .then(numRowsAffected => {
+        res.status(204).end()
+      })
+      .catch(next)
+  })
 
 module.exports = bookmarksRouter;
